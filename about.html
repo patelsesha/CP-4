@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About | PhishGuard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .lang-wrap { display: flex; align-items: center; gap: 8px; margin-left: 30px; }
+        .lang-btn { padding: 6px 14px; border-radius: 999px; border: 2px solid #ffffff55; background: transparent; color: #fff; font-size: 14px; font-weight: 400; cursor: pointer; transition: all 0.2s; }
+        .lang-btn.active { background: #f5a623; border-color: #f5a623; color: #0a0f1e; }
+        .lang-btn:hover:not(.active) { border-color: #fff; background: rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="{{ url_for('static', filename='logo.png') }}">
+    </div>
+    <nav>
+        <a href="/"><span class="en">Home</span><span class="hi" style="display:none">होम</span></a>
+        <a href="/how"><span class="en">How It Works</span><span class="hi" style="display:none">यह कैसे काम करता है</span></a>
+        <a href="/about" class="active"><span class="en">About</span><span class="hi" style="display:none">हमारे बारे में</span></a>
+        <div class="lang-wrap">
+            <select id="langSelect" onchange="setLang(this.value)" style="
+                padding: 7px 14px;
+                border-radius: 999px;
+                border: 2px solid #ffffff55;
+                background: rgba(255,255,255,0.1);
+                color: #fff;
+                font-size: 15px;
+                font-weight: 600;
+                cursor: pointer;
+                outline: none;
+            ">
+                <option value="en" style="background:#0a0f1e; color:#fff;">🌐 English</option>
+                <option value="hi" style="background:#0a0f1e; color:#fff;">🌐 हिंदी</option>
+            </select>
+        </div>
+    </nav>
+</header>
+
+<section class="hero">
+    <h1><span class="en">About PhishGuard</span><span class="hi" style="display:none">PhishGuard के बारे में</span></h1>
+    <p>
+        <span class="en">An ML-powered tool to detect malicious URLs and phishing emails in real time.</span>
+        <span class="hi" style="display:none">दुर्भावनापूर्ण URLs और फ़िशिंग ईमेल को रियल टाइम में पहचानने के लिए ML-आधारित टूल।</span>
+    </p>
+</section>
+
+<section class="about-top">
+
+    <div class="about-box">
+        <div class="about-title">
+            <img src="{{ url_for('static', filename='user.png') }}" class="about-icon">
+            <h2><span class="en">Who We Are</span><span class="hi" style="display:none">हम कौन हैं</span></h2>
+        </div>
+        <p>
+            <span class="en">PhishGuard is a machine learning based cybersecurity tool designed to protect users from phishing attacks, malware links, and defacement threats. It uses XGBoost models trained on real-world datasets to deliver fast and accurate threat detection for both URLs and email content.</span>
+            <span class="hi" style="display:none">PhishGuard एक मशीन लर्निंग आधारित साइबर सुरक्षा टूल है जो उपयोगकर्ताओं को फ़िशिंग हमलों, मैलवेयर लिंक और डिफेसमेंट खतरों से बचाने के लिए डिज़ाइन किया गया है। यह वास्तविक डेटासेट पर प्रशिक्षित XGBoost मॉडल का उपयोग करके URLs और ईमेल सामग्री दोनों के लिए तेज़ और सटीक खतरे का पता लगाता है।</span>
+        </p>
+    </div>
+
+    <div class="about-box">
+        <div class="about-title">
+            <img src="{{ url_for('static', filename='target.png') }}" class="about-icon">
+            <h2><span class="en">Our Mission</span><span class="hi" style="display:none">हमारा मिशन</span></h2>
+        </div>
+        <p>
+            <span class="en">Our mission is to make cybersecurity accessible to everyone. PhishGuard provides instant, explainable threat detection — so users not only know if a URL or email is dangerous, but also understand exactly why it was flagged.</span>
+            <span class="hi" style="display:none">हमारा मिशन साइबर सुरक्षा को सभी के लिए सुलभ बनाना है। PhishGuard तत्काल, स्पष्ट खतरे की पहचान प्रदान करता है — ताकि उपयोगकर्ता न केवल यह जानें कि URL या ईमेल खतरनाक है, बल्कि यह भी समझें कि इसे क्यों फ्लैग किया गया।</span>
+        </p>
+    </div>
+
+</section>
+
+<section class="why">
+    <h2><span class="en">Why Choose PhishGuard?</span><span class="hi" style="display:none">PhishGuard क्यों चुनें?</span></h2>
+    <p>
+        <span class="en">Our platform keeps you safe online by providing:</span>
+        <span class="hi" style="display:none">हमारा प्लेटफॉर्म आपको ऑनलाइन सुरक्षित रखता है:</span>
+    </p>
+
+    <div class="why-list">
+        <div class="why-item">
+            <img src="{{ url_for('static', filename='scan.png') }}">
+            <span>
+                <span class="en">URL scanning across 4 threat categories — Benign, Phishing, Malware, and Defacement.</span>
+                <span class="hi" style="display:none">4 खतरे की श्रेणियों में URL स्कैनिंग — Benign, Phishing, Malware और Defacement।</span>
+            </span>
+        </div>
+        <div class="why-item">
+            <img src="{{ url_for('static', filename='search.png') }}">
+            <span>
+                <span class="en">Email content analysis using NLP and TF-IDF to detect phishing emails with 97%+ accuracy.</span>
+                <span class="hi" style="display:none">97%+ सटीकता के साथ फ़िशिंग ईमेल का पता लगाने के लिए NLP और TF-IDF का उपयोग करके ईमेल सामग्री विश्लेषण।</span>
+            </span>
+        </div>
+        <div class="why-item">
+            <img src="{{ url_for('static', filename='support.png') }}">
+            <span>
+                <span class="en">SHAP-based explanations that show exactly which features triggered each verdict.</span>
+                <span class="hi" style="display:none">SHAP-आधारित स्पष्टीकरण जो दिखाते हैं कि किन विशेषताओं ने प्रत्येक निर्णय को ट्रिगर किया।</span>
+            </span>
+        </div>
+    </div>
+</section>
+
+<script>
+    function setLang(lang) {
+        document.querySelectorAll('.en').forEach(function(el) { el.style.display = lang === 'en' ? '' : 'none'; });
+        document.querySelectorAll('.hi').forEach(function(el) { el.style.display = lang === 'hi' ? '' : 'none'; });
+        var select = document.getElementById('langSelect');
+        if (select) select.value = lang;
+        localStorage.setItem('phishguard_lang', lang);
+    }
+    var savedLang = localStorage.getItem('phishguard_lang') || 'en';
+    setLang(savedLang);
+</script>
+
+</body>
+</html>

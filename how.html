@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>How It Works | PhishGuard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .lang-wrap { display: flex; align-items: center; gap: 8px; margin-left: 30px; }
+        .lang-btn { padding: 6px 14px; border-radius: 999px; border: 2px solid #ffffff55; background: transparent; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .lang-btn.active { background: #f5a623; border-color: #f5a623; color: #0a0f1e; }
+        .lang-btn:hover:not(.active) { border-color: #fff; background: rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="PhishGuard Logo">
+    </div>
+    <nav>
+        <a href="/"><span class="en">Home</span><span class="hi" style="display:none">होम</span></a>
+        <a href="/how" class="active"><span class="en">How It Works</span><span class="hi" style="display:none">यह कैसे काम करता है</span></a>
+        <a href="/about"><span class="en">About</span><span class="hi" style="display:none">हमारे बारे में</span></a>
+        <div class="lang-wrap">
+            <select id="langSelect" onchange="setLang(this.value)" style="
+                padding: 7px 14px;
+                border-radius: 999px;
+                border: 2px solid #ffffff55;
+                background: rgba(255,255,255,0.1);
+                color: #fff;
+                font-size: 15px;
+                font-weight: 600;
+                cursor: pointer;
+                outline: none;
+            ">
+                <option value="en" style="background:#0a0f1e; color:#fff;">🌐 English</option>
+                <option value="hi" style="background:#0a0f1e; color:#fff;">🌐 हिंदी</option>
+            </select>
+        </div>
+    </nav>
+</header>
+
+<section class="hero">
+    <h1><span class="en">How It Works</span><span class="hi" style="display:none">यह कैसे काम करता है</span></h1>
+    <p>
+        <span class="en">Learn how PhishGuard uses Machine Learning to protect you from phishing URLs and malicious emails.</span>
+        <span class="hi" style="display:none">जानें कि PhishGuard फ़िशिंग URLs और दुर्भावनापूर्ण ईमेल से बचाने के लिए मशीन लर्निंग का उपयोग कैसे करता है।</span>
+    </p>
+    <div class="hero-badges">
+        <span><span class="en">⚡ Real-Time Detection</span><span class="hi" style="display:none">⚡ रियल-टाइम पहचान</span></span>
+        <span><span class="en">🧠 XGBoost ML Model</span><span class="hi" style="display:none">🧠 XGBoost ML मॉडल</span></span>
+        <span><span class="en">📧 Email Analysis</span><span class="hi" style="display:none">📧 ईमेल विश्लेषण</span></span>
+        <span><span class="en">📊 SHAP Explanations</span><span class="hi" style="display:none">📊 SHAP स्पष्टीकरण</span></span>
+    </div>
+</section>
+
+<section class="how-container">
+    <div class="how-card">
+        <h2><span class="en">1️⃣ Enter a URL or Email</span><span class="hi" style="display:none">1️⃣ URL या ईमेल दर्ज करें</span></h2>
+        <p>
+            <span class="en">Paste any suspicious URL or full email content into the scanner. PhishGuard accepts both — switch between URL and Email mode using the toggle buttons on the home page.</span>
+            <span class="hi" style="display:none">कोई भी संदिग्ध URL या पूरी ईमेल सामग्री स्कैनर में पेस्ट करें। PhishGuard दोनों को स्वीकार करता है — होम पेज पर टॉगल बटन का उपयोग करके URL और ईमेल मोड के बीच स्विच करें।</span>
+        </p>
+    </div>
+    <div class="how-card">
+        <h2><span class="en">2️⃣ ML Model Analyses It</span><span class="hi" style="display:none">2️⃣ ML मॉडल विश्लेषण करता है</span></h2>
+        <p>
+            <span class="en">For URLs, 50 features are extracted — domain structure, entropy, suspicious keywords, TLD, file extensions and more. For emails, TF-IDF converts the text into 10,000 word-weight features. Both are fed into a trained XGBoost model.</span>
+            <span class="hi" style="display:none">URLs के लिए, 50 विशेषताएं निकाली जाती हैं — डोमेन संरचना, एन्ट्रॉपी, संदिग्ध कीवर्ड, TLD, फ़ाइल एक्सटेंशन आदि। ईमेल के लिए, TF-IDF टेक्स्ट को 10,000 वर्ड-वेट फीचर में बदलता है। दोनों को प्रशिक्षित XGBoost मॉडल में डाला जाता है।</span>
+        </p>
+    </div>
+    <div class="how-card">
+        <h2><span class="en">3️⃣ Get Instant Results</span><span class="hi" style="display:none">3️⃣ तुरंत परिणाम पाएं</span></h2>
+        <p>
+            <span class="en">You receive a verdict — Safe, Phishing, Malware, or Defacement — with a confidence score, class probabilities, model metrics, and SHAP-based explanations.</span>
+            <span class="hi" style="display:none">आपको एक निर्णय मिलता है — सुरक्षित, फ़िशिंग, मैलवेयर, या डिफेसमेंट — विश्वास स्कोर, वर्ग संभावनाओं, मॉडल मेट्रिक्स और SHAP-आधारित स्पष्टीकरण के साथ।</span>
+        </p>
+    </div>
+</section>
+
+<section class="how-container">
+    <div class="how-card">
+        <h2><span class="en">🔗 URL Model</span><span class="hi" style="display:none">🔗 URL मॉडल</span></h2>
+        <p>
+            <span class="en">Trained on 650,000+ real URLs. Classifies into 4 categories — Benign, Phishing, Malware, and Defacement — with 96%+ accuracy using XGBoost.</span>
+            <span class="hi" style="display:none">650,000+ वास्तविक URLs पर प्रशिक्षित। XGBoost का उपयोग करके 96%+ सटीकता के साथ 4 श्रेणियों में वर्गीकृत करता है — Benign, Phishing, Malware और Defacement।</span>
+        </p>
+    </div>
+    <div class="how-card">
+        <h2><span class="en">📧 Email Model</span><span class="hi" style="display:none">📧 ईमेल मॉडल</span></h2>
+        <p>
+            <span class="en">Trained on 18,000+ real phishing and safe emails. Uses TF-IDF vectorization with XGBoost to detect phishing email content with 97%+ accuracy.</span>
+            <span class="hi" style="display:none">18,000+ वास्तविक फ़िशिंग और सुरक्षित ईमेल पर प्रशिक्षित। XGBoost के साथ TF-IDF वेक्टराइज़ेशन का उपयोग करके 97%+ सटीकता के साथ फ़िशिंग ईमेल सामग्री का पता लगाता है।</span>
+        </p>
+    </div>
+    <div class="how-card">
+        <h2><span class="en">🔍 SHAP Explanations</span><span class="hi" style="display:none">🔍 SHAP स्पष्टीकरण</span></h2>
+        <p>
+            <span class="en">Every URL verdict comes with SHAP-based reasons — showing which features raised or lowered the risk score, so you understand exactly why a URL was flagged.</span>
+            <span class="hi" style="display:none">हर URL निर्णय के साथ SHAP-आधारित कारण आते हैं — जो दिखाते हैं कि किन विशेषताओं ने जोखिम स्कोर को बढ़ाया या घटाया, ताकि आप समझ सकें कि URL को क्यों फ्लैग किया गया।</span>
+        </p>
+    </div>
+</section>
+
+<section class="how-points">
+    <div class="point">
+        <img src="{{ url_for('static', filename='threat.png') }}">
+        <p><span class="en">Real-time threat analysis</span><span class="hi" style="display:none">रियल-टाइम खतरे का विश्लेषण</span></p>
+    </div>
+    <div class="point">
+        <img src="{{ url_for('static', filename='malicious.png') }}">
+        <p><span class="en">URL and email detection</span><span class="hi" style="display:none">URL और ईमेल पहचान</span></p>
+    </div>
+    <div class="point">
+        <img src="{{ url_for('static', filename='report.png') }}">
+        <p><span class="en">Detailed SHAP reports</span><span class="hi" style="display:none">विस्तृत SHAP रिपोर्ट</span></p>
+    </div>
+</section>
+
+<script>
+    function setLang(lang) {
+        document.querySelectorAll('.en').forEach(function(el) { el.style.display = lang === 'en' ? '' : 'none'; });
+        document.querySelectorAll('.hi').forEach(function(el) { el.style.display = lang === 'hi' ? '' : 'none'; });
+        var select = document.getElementById('langSelect');
+        if (select) select.value = lang;
+        localStorage.setItem('phishguard_lang', lang);
+    }
+    var savedLang = localStorage.getItem('phishguard_lang') || 'en';
+    setLang(savedLang);
+</script>
+
+</body>
+</html>

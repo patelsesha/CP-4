@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PhishGuard | Phish No More</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* ── LANGUAGE TOGGLE ────────────────────────────── */
+        .lang-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 30px;
+        }
+        .lang-btn {
+            padding: 6px 14px;
+            border-radius: 999px;
+            border: 2px solid #ffffff55;
+            background: transparent;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn.active {
+            background: #f5a623;
+            border-color: #f5a623;
+            color: #0a0f1e;
+        }
+        .lang-btn:hover:not(.active) {
+            border-color: #fff;
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* ── TOGGLE BUTTONS ─────────────────────────────── */
+        .toggle-wrap {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 20px;
+        }
+        .toggle-btn {
+            padding: 10px 36px;
+            font-size: 14px;
+            font-weight: 700;
+            border: 2px solid #f5a623;
+            background: transparent;
+            color: #f5a623;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+        .toggle-btn:first-child { border-radius: 999px 0 0 999px; border-right: 1px solid #f5a623; }
+        .toggle-btn:last-child  { border-radius: 0 999px 999px 0; border-left:  1px solid #f5a623; }
+        .toggle-btn.active      { background: #f5a623; color: #0a0f1e; }
+        .toggle-btn:hover:not(.active) { background: rgba(245,166,35,0.1); }
+
+        /* ── INPUT SECTIONS ─────────────────────────────── */
+        .input-section { display: none; }
+        .input-section.active { display: block; }
+
+        .email-form {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .email-textarea {
+            flex: 1;
+            min-width: 0;
+            min-height: 130px;
+            padding: 14px 18px;
+            border-radius: 10px;
+            border: none;
+            font-size: 14px;
+            font-family: 'Segoe UI', sans-serif;
+            resize: vertical;
+            box-sizing: border-box;
+            background: #fff;
+            color: #0a0f1e;
+        }
+        .email-textarea:focus { outline: 2px solid #f5a623; }
+        .email-hint { font-size: 12px; color: rgba(255,255,255,0.5); text-align: center; margin-top: 6px; }
+        .email-form button {
+            background: #f5a623;
+            color: #ffffff;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+        .email-form button:hover { background: #e09010; }
+
+        /* ── REPORT PANEL ───────────────────────────────── */
+        .panel-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 1000;
+            backdrop-filter: blur(3px);
+        }
+        .panel-overlay.active { display: flex; align-items: center; justify-content: flex-end; }
+        .report-panel {
+            width: 460px; height: 100vh;
+            background: #0d1117; border-left: 1px solid #21262d;
+            overflow-y: auto; padding: 28px 24px 40px;
+            box-sizing: border-box;
+            transform: translateX(100%);
+            transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+            font-family: 'Segoe UI', sans-serif; color: #e6edf3; position: relative;
+        }
+        .report-panel.open { transform: translateX(0); }
+        .panel-close {
+            position: absolute; top: 18px; right: 20px;
+            background: none; border: none; color: #8b949e; font-size: 22px; cursor: pointer;
+        }
+        .panel-close:hover { color: #e6edf3; }
+        .verdict-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 18px; border-radius: 999px;
+            font-size: 15px; font-weight: 700; letter-spacing: .5px; margin-bottom: 6px;
+        }
+        .badge-benign        { background:#0d4429; color:#3fb950; border:1px solid #238636; }
+        .badge-phishing      { background:#4a1818; color:#f85149; border:1px solid #da3633; }
+        .badge-malware       { background:#4a2800; color:#f0883e; border:1px solid #d4651c; }
+        .badge-defacement    { background:#1c1c4a; color:#79c0ff; border:1px solid #388bfd; }
+        .badge-safe-email    { background:#0d4429; color:#3fb950; border:1px solid #238636; }
+        .badge-phishing-email{ background:#4a1818; color:#f85149; border:1px solid #da3633; }
+        .scanned-url {
+            font-size: 11px; color: #8b949e; word-break: break-all;
+            margin-bottom: 18px; padding: 8px 10px;
+            background: #161b22; border-radius: 6px; border: 1px solid #21262d;
+        }
+        .conf-label { display: flex; justify-content: space-between; font-size: 12px; color: #8b949e; margin-bottom: 5px; }
+        .conf-bar-bg { height: 8px; background: #21262d; border-radius: 999px; overflow: hidden; margin-bottom: 20px; }
+        .conf-bar-fill { height: 100%; border-radius: 999px; transition: width 1s ease; }
+        .fill-benign         { background: linear-gradient(90deg,#238636,#3fb950); }
+        .fill-phishing       { background: linear-gradient(90deg,#da3633,#f85149); }
+        .fill-malware        { background: linear-gradient(90deg,#d4651c,#f0883e); }
+        .fill-defacement     { background: linear-gradient(90deg,#388bfd,#79c0ff); }
+        .fill-safe-email     { background: linear-gradient(90deg,#238636,#3fb950); }
+        .fill-phishing-email { background: linear-gradient(90deg,#da3633,#f85149); }
+        .section-title {
+            font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+            color: #8b949e; margin: 22px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #21262d;
+        }
+        .proba-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
+        .proba-item { background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 10px 12px; }
+        .proba-item .pname { font-size: 11px; color: #8b949e; margin-bottom: 3px; text-transform: capitalize; }
+        .proba-item .pval  { font-size: 18px; font-weight: 700; }
+        .pval-benign { color:#3fb950; } .pval-phishing { color:#f85149; }
+        .pval-malware { color:#f0883e; } .pval-defacement { color:#79c0ff; }
+        .pval-safe { color:#3fb950; } .pval-phish { color:#f85149; }
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .metric-item { background: #161b22; border: 1px solid #21262d; border-radius: 8px; padding: 10px 12px; text-align: center; }
+        .metric-item .mval   { font-size: 20px; font-weight: 700; color: #e6edf3; }
+        .metric-item .mlabel { font-size: 11px; color: #8b949e; margin-top: 2px; }
+        .reason-item {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 10px 12px; background: #161b22; border: 1px solid #21262d;
+            border-radius: 8px; margin-bottom: 7px; gap: 10px;
+            opacity: 0; transform: translateY(10px); animation: fadeUp 0.4s forwards;
+        }
+        @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+        .reason-left .rfeat { font-size: 13px; font-weight: 600; color: #e6edf3; }
+        .reason-left .rval  { font-size: 11px; color: #8b949e; margin-top: 2px; }
+        .reason-right { text-align: right; flex-shrink: 0; }
+        .reason-right .rdir { font-size: 11px; }
+        .dir-increased { color:#f85149; } .dir-decreased { color:#3fb950; }
+        .impact-badge { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 999px; font-weight: 600; margin-top: 4px; }
+        .impact-high   { background:#4a1818; color:#f85149; }
+        .impact-medium { background:#4a2800; color:#f0883e; }
+        .impact-low    { background:#1c2128; color:#8b949e; }
+        .reco-box { padding: 14px 16px; border-radius: 8px; font-size: 13px; line-height: 1.6; margin-top: 8px; }
+        .reco-benign     { background:#0d4429; border:1px solid #238636; color:#3fb950; }
+        .reco-phishing   { background:#4a1818; border:1px solid #da3633; color:#f85149; }
+        .reco-malware    { background:#4a2800; border:1px solid #d4651c; color:#f0883e; }
+        .reco-defacement { background:#1c1c4a; border:1px solid #388bfd; color:#79c0ff; }
+        .reco-safe       { background:#0d4429; border:1px solid #238636; color:#3fb950; }
+        .error-box {
+            background: #4a1818; border: 1px solid #da3633; color: #f85149;
+            padding: 14px 16px; border-radius: 8px; margin-top: 16px; font-size: 13px;
+            max-width: 560px; margin-left: auto; margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── HEADER ─────────────────────────────────────── -->
+<header>
+    <div class="logo">
+        <img src="{{ url_for('static', filename='logo.png') }}">
+    </div>
+    <nav>
+        <a href="/" class="active"><span class="en">Home</span><span class="hi" style="display:none">होम</span></a>
+        <a href="/how"><span class="en">How It Works</span><span class="hi" style="display:none">यह कैसे काम करता है</span></a>
+        <a href="/about"><span class="en">About</span><span class="hi" style="display:none">हमारे बारे में</span></a>
+        <!-- Language Toggle -->
+        <div class="lang-wrap">
+            <select id="langSelect" onchange="setLang(this.value)" style="
+                padding: 7px 14px;
+                border-radius: 999px;
+                border: 2px solid #ffffff55;
+                background: rgba(255,255,255,0.1);
+                color: #fff;
+                font-size: 15px;
+                font-weight: 600;
+                cursor: pointer;
+                outline: none;
+            ">
+                <option value="en" style="background:#adbdf0; color:#fff;">🌐 English</option>
+                <option value="hi" style="background:#adbdf0; color:#fff;">🌐 हिंदी</option>
+            </select>
+        </div>
+    </nav>
+</header>
+
+<!-- ── HERO ───────────────────────────────────────── -->
+<section class="hero">
+    <h1>
+        <span class="en">Detect Malicious URLs and Emails</span>
+        <span class="hi" style="display:none">दुर्भावनापूर्ण URLs और ईमेल का पता लगाएं</span>
+    </h1>
+    <p>
+        <span class="en">Analyze suspicious links and email content to protect yourself from phishing, malware, and defacement attacks.</span>
+        <span class="hi" style="display:none">फ़िशिंग, मैलवेयर और डिफेसमेंट हमलों से बचने के लिए संदिग्ध लिंक और ईमेल की जांच करें।</span>
+    </p>
+
+    <!-- toggle buttons -->
+    <div class="toggle-wrap">
+        <button class="toggle-btn active" id="urlBtn" onclick="switchMode('url')">
+            🔗 <span class="en">URL</span><span class="hi" style="display:none">URL</span>
+        </button>
+        <button class="toggle-btn" id="emailBtn" onclick="switchMode('email')">
+            ✉️ <span class="en">Email</span><span class="hi" style="display:none">ईमेल</span>
+        </button>
+    </div>
+
+    <!-- url input -->
+    <div class="input-section active" id="url-section">
+        <form method="POST" class="scan-box">
+            <input type="hidden" name="mode" value="url">
+            <input type="text" name="url"
+                   placeholder="Paste a full URL e.g. youtube.com/watch?v=abc..."
+                   id="urlPlaceholder">
+            <button type="submit">
+                <span class="en">Scan Now</span>
+                <span class="hi" style="display:none">अभी स्कैन करें</span>
+            </button>
+        </form>
+    </div>
+
+    <!-- email input -->
+    <div class="input-section" id="email-section">
+        <form method="POST" class="email-form">
+            <input type="hidden" name="mode" value="email">
+            <textarea name="email_text" class="email-textarea" id="emailPlaceholder"
+                      placeholder="Paste the full email content here..."></textarea>
+            <button type="submit">
+                <span class="en">Scan Email</span>
+                <span class="hi" style="display:none">ईमेल स्कैन करें</span>
+            </button>
+        </form>
+        <p class="email-hint">
+            <span class="en">Paste the full email text including subject and body for best results</span>
+            <span class="hi" style="display:none">बेहतर परिणाम के लिए विषय और मुख्य भाग सहित पूरा ईमेल टेक्स्ट पेस्ट करें</span>
+        </p>
+    </div>
+
+    {% if error %}
+    <div class="error-box">⚠️ {{ error }}</div>
+    {% endif %}
+</section>
+
+<!-- ── FEATURE CARDS ──────────────────────────────── -->
+<section class="features">
+    <div class="card">
+        <h3><span class="en">Real-Time URL Scan</span><span class="hi" style="display:none">रियल-टाइम URL स्कैन</span></h3>
+        <p><span class="en">Instantly analyze URLs for phishing, malware, and defacement threats.</span><span class="hi" style="display:none">फ़िशिंग, मैलवेयर और डिफेसमेंट के लिए URLs की तुरंत जांच करें।</span></p>
+    </div>
+    <div class="card">
+        <h3><span class="en">Email Content Analysis</span><span class="hi" style="display:none">ईमेल सामग्री विश्लेषण</span></h3>
+        <p><span class="en">Detect phishing emails by analyzing full content using NLP and ML.</span><span class="hi" style="display:none">NLP और ML का उपयोग करके पूरी ईमेल सामग्री का विश्लेषण करके फ़िशिंग ईमेल का पता लगाएं।</span></p>
+    </div>
+    <div class="card">
+        <h3><span class="en">ML-Powered Detection</span><span class="hi" style="display:none">ML-आधारित पहचान</span></h3>
+        <p><span class="en">Trained on 650,000+ URLs and 18,000+ emails using XGBoost with 97%+ accuracy.</span><span class="hi" style="display:none">XGBoost का उपयोग करके 650,000+ URLs और 18,000+ ईमेल पर प्रशिक्षित, 97%+ सटीकता के साथ।</span></p>
+    </div>
+</section>
+
+<section class="info">
+    <div><span class="en">✔ Blocks phishing &amp; fraudulent links</span><span class="hi" style="display:none">✔ फ़िशिंग और धोखाधड़ी वाले लिंक को ब्लॉक करता है</span></div>
+    <div><span class="en">✔ Detects phishing email content</span><span class="hi" style="display:none">✔ फ़िशिंग ईमेल सामग्री का पता लगाता है</span></div>
+    <div><span class="en">✔ Helps protect sensitive information</span><span class="hi" style="display:none">✔ संवेदनशील जानकारी की सुरक्षा में मदद करता है</span></div>
+</section>
+
+<!-- ── REPORT PANEL ───────────────────────────────── -->
+{% if report %}
+<div class="panel-overlay active" id="panelOverlay">
+    <div class="report-panel open" id="reportPanel">
+        <button class="panel-close" onclick="closePanel()">✕</button>
+
+        {% if report.label == 'Safe Email' %}{% set badge_class = 'safe-email' %}
+        {% elif report.label == 'Phishing Email' %}{% set badge_class = 'phishing-email' %}
+        {% else %}{% set badge_class = report.label %}{% endif %}
+
+        <div class="verdict-badge badge-{{ badge_class }}">
+            {% if report.label in ['benign', 'Safe Email'] %}✅ <span class="en">Safe</span><span class="hi" style="display:none">सुरक्षित</span>
+            {% elif report.label in ['phishing', 'Phishing Email'] %}🎣 <span class="en">Phishing</span><span class="hi" style="display:none">फ़िशिंग</span>
+            {% elif report.label == 'malware' %}☠️ <span class="en">Malware</span><span class="hi" style="display:none">मैलवेयर</span>
+            {% else %}🔨 <span class="en">Defacement</span><span class="hi" style="display:none">डिफेसमेंट</span>
+            {% endif %}
+        </div>
+
+        {% if report.mode == 'email' %}
+        <div class="scanned-url">✉️ {{ report.email_text }}</div>
+        {% else %}
+        <div class="scanned-url">🔗 {{ report.url }}</div>
+        {% endif %}
+
+        <div class="conf-label">
+            <span><span class="en">Confidence</span><span class="hi" style="display:none">विश्वास</span></span>
+            <span>{{ report.confidence_pct }}%</span>
+        </div>
+        <div class="conf-bar-bg">
+            <div class="conf-bar-fill fill-{{ badge_class }}" id="confBar" style="width:0%"></div>
+        </div>
+
+        <div class="section-title"><span class="en">Class Probabilities</span><span class="hi" style="display:none">वर्ग संभावनाएं</span></div>
+        <div class="proba-grid">
+            {% for cls, pct in report.all_proba.items() %}
+            <div class="proba-item">
+                <div class="pname">{{ cls }}</div>
+                <div class="pval {% if 'Safe' in cls or cls == 'benign' %}pval-safe{% elif 'Phishing' in cls or cls == 'phishing' %}pval-phish{% elif cls == 'malware' %}pval-malware{% else %}pval-defacement{% endif %}">{{ pct }}%</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="section-title"><span class="en">Model Metrics ({{ report.label }})</span><span class="hi" style="display:none">मॉडल मेट्रिक्स ({{ report.label }})</span></div>
+        <div class="metrics-grid">
+            <div class="metric-item">
+                <div class="mval">{{ "%.0f"|format(report.metrics.precision * 100) }}%</div>
+                <div class="mlabel"><span class="en">Precision</span><span class="hi" style="display:none">परिशुद्धता</span></div>
+            </div>
+            <div class="metric-item">
+                <div class="mval">{{ "%.0f"|format(report.metrics.recall * 100) }}%</div>
+                <div class="mlabel"><span class="en">Recall</span><span class="hi" style="display:none">रिकॉल</span></div>
+            </div>
+            <div class="metric-item">
+                <div class="mval">{{ "%.0f"|format(report.metrics.f1 * 100) }}%</div>
+                <div class="mlabel"><span class="en">F1 Score</span><span class="hi" style="display:none">F1 स्कोर</span></div>
+            </div>
+            <div class="metric-item">
+                <div class="mval">{{ "%.0f"|format(report.metrics.accuracy * 100) }}%</div>
+                <div class="mlabel"><span class="en">Accuracy</span><span class="hi" style="display:none">सटीकता</span></div>
+            </div>
+        </div>
+
+        <div class="section-title">
+            {% if report.mode == 'email' %}<span class="en">Key Words Detected</span><span class="hi" style="display:none">मुख्य शब्द पाए गए</span>
+            {% else %}<span class="en">Why This Verdict?</span><span class="hi" style="display:none">यह निर्णय क्यों?</span>{% endif %}
+        </div>
+        {% for r in report.top_reasons %}
+        <div class="reason-item" style="animation-delay: {{ loop.index0 * 0.07 }}s">
+            <div class="reason-left">
+                <div class="rfeat">{{ r.feature }}</div>
+                <div class="rval">
+                    {% if report.mode == 'email' %}TF-IDF Score: {{ r.value }}
+                    {% else %}<span class="en">Value</span><span class="hi" style="display:none">मान</span>: {{ r.value }}{% endif %}
+                </div>
+            </div>
+            <div class="reason-right">
+                <div class="rdir dir-{{ r.direction }}">
+                    {% if r.direction == 'increased' %}▲ <span class="en">Raised risk</span><span class="hi" style="display:none">जोखिम बढ़ा</span>
+                    {% else %}▼ <span class="en">Lowered risk</span><span class="hi" style="display:none">जोखिम घटा</span>{% endif %}
+                </div>
+                <span class="impact-badge impact-{{ r.impact }}">
+                    <span class="en">{{ r.impact }} impact</span>
+                    <span class="hi" style="display:none">{% if r.impact == 'high' %}उच्च{% elif r.impact == 'medium' %}मध्यम{% else %}कम{% endif %} प्रभाव</span>
+                </span>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="section-title"><span class="en">Recommendation</span><span class="hi" style="display:none">सिफारिश</span></div>
+        <div class="reco-box {% if report.label in ['benign','Safe Email'] %}reco-safe{% elif report.label in ['phishing','Phishing Email'] %}reco-phishing{% elif report.label == 'malware' %}reco-malware{% else %}reco-defacement{% endif %}">
+            {% if report.label in ['benign', 'Safe Email'] %}
+                <span class="en">✅ This appears safe. Always stay cautious and avoid sharing sensitive information unnecessarily.</span>
+                <span class="hi" style="display:none">✅ यह सुरक्षित लगता है। हमेशा सतर्क रहें और अनावश्यक रूप से संवेदनशील जानकारी साझा करने से बचें।</span>
+            {% elif report.label in ['phishing', 'Phishing Email'] %}
+                <span class="en">🚨 This is likely a phishing attempt. Do NOT click any links, reply, or provide personal details.</span>
+                <span class="hi" style="display:none">🚨 यह संभवतः एक फ़िशिंग प्रयास है। किसी भी लिंक पर क्लिक न करें, जवाब न दें, या व्यक्तिगत जानकारी न दें।</span>
+            {% elif report.label == 'malware' %}
+                <span class="en">☠️ This URL may download harmful software. Do not click or visit it.</span>
+                <span class="hi" style="display:none">☠️ यह URL हानिकारक सॉफ़्टवेयर डाउनलोड कर सकता है। इस पर क्लिक या विज़िट न करें।</span>
+            {% else %}
+                <span class="en">🔨 This site may have been hacked. Avoid visiting it until verified as clean.</span>
+                <span class="hi" style="display:none">🔨 यह साइट हैक की गई हो सकती है। इसे तब तक विज़िट न करें जब तक यह सुरक्षित न हो जाए।</span>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endif %}
+
+<!-- ── ALL SCRIPTS ─────────────────────────────────── -->
+<script>
+    // ── Language toggle ──
+    function setLang(lang) {
+        document.querySelectorAll('.en').forEach(function(el) {
+            el.style.display = lang === 'en' ? '' : 'none';
+        });
+        document.querySelectorAll('.hi').forEach(function(el) {
+            el.style.display = lang === 'hi' ? '' : 'none';
+        });
+        var select = document.getElementById('langSelect');
+        if (select) select.value = lang;
+        localStorage.setItem('phishguard_lang', lang);
+
+        // update placeholders
+        var urlInput = document.getElementById('urlPlaceholder');
+        var emailTA  = document.getElementById('emailPlaceholder');
+        if (urlInput) urlInput.placeholder = lang === 'hi'
+            ? 'पूरा URL यहाँ पेस्ट करें जैसे youtube.com/watch?v=abc...'
+            : 'Paste a full URL e.g. youtube.com/watch?v=abc...';
+        if (emailTA) emailTA.placeholder = lang === 'hi'
+            ? 'यहाँ पूरी ईमेल सामग्री पेस्ट करें...'
+            : 'Paste the full email content here...';
+    }
+
+    // restore saved language
+    var savedLang = localStorage.getItem('phishguard_lang') || 'en';
+    setLang(savedLang);
+
+    // ── Mode toggle ──
+    function switchMode(mode) {
+        var urlSection   = document.getElementById('url-section');
+        var emailSection = document.getElementById('email-section');
+        var urlBtn       = document.getElementById('urlBtn');
+        var emailBtn     = document.getElementById('emailBtn');
+        if (mode === 'url') {
+            urlSection.classList.add('active');
+            emailSection.classList.remove('active');
+            urlBtn.classList.add('active');
+            emailBtn.classList.remove('active');
+        } else {
+            emailSection.classList.add('active');
+            urlSection.classList.remove('active');
+            emailBtn.classList.add('active');
+            urlBtn.classList.remove('active');
+        }
+    }
+
+    function closePanel() {
+        document.getElementById('reportPanel').classList.remove('open');
+        document.getElementById('panelOverlay').classList.remove('active');
+        setTimeout(function() { window.location.href = '/'; }, 350);
+    }
+
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('mode') === 'email') switchMode('email');
+
+    {% if report %}
+    switchMode('{{ report.mode }}');
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            var bar = document.getElementById('confBar');
+            if (bar) bar.style.width = '{{ report.confidence_pct }}%';
+        }, 400);
+    });
+    document.getElementById('panelOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closePanel();
+    });
+    {% endif %}
+</script>
+
+</body>
+</html>
